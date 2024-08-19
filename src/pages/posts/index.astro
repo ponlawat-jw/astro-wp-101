@@ -1,0 +1,35 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+let res = await fetch('https://maag.codesupply.co/lifestyle/wp-json/wp/v2/posts');
+let posts = await res.json();
+
+const formattedPublishDate = (date: string) => new Date(date).toLocaleDateString("zh-Hans-CN", {year:"numeric",month:"2-digit", day:"2-digit"});
+
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="POST" description="DES POST WP" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+                {
+                    posts.map((post: any) => (
+                    <a href={`posts/${post.slug}`} rel="noopener noreferrer">
+                        <h3 set:html={post?.title.rendered} />
+                        <img src={post?.yoast_head_json?.og_image[0].url} alt="" />
+                    </a>
+				))
+                }
+            </section>
+		</main>
+		<Footer />
+	</body>
+</html>

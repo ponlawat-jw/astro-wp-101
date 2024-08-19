@@ -1,0 +1,58 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import base64 from 'base-64';
+const { slug } = Astro.params;
+
+console.log({ slug });
+
+
+const username = 'fetcher';
+const password = 'Aa111111!';
+const newHeaders = new Headers({
+    "Content-Type": "text/html; charset=utf-8",
+});
+newHeaders.append('Authorization', 'Basic ' + base64.encode(username + ':' + password));
+
+
+
+let res = await fetch(`https://maag.codesupply.co/lifestyle/wp-json/wp/v2/posts?slug=${slug}`, {
+    method: 'GET',
+    headers: newHeaders,
+});
+let [post] = await res.json();
+
+
+// The getStaticPaths() is required for static Astro sites.
+// If using SSR, you will not need this function.
+export async function getStaticPaths() {
+  let data = await fetch("https://maag.codesupply.co/lifestyle/wp-json/wp/v2/posts");
+  let posts = await data.json();
+  
+  
+  return posts.map((post: any) => ({
+    params: { slug: decodeURIComponent(post.slug) },
+    props: { post: post },
+  }));
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="POST" description="DES POST WP" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section title={post?.title.rendered}>
+                <article>
+                  <h1 set:html={post?.title.rendered} />
+                  <Fragment set:html={post?.content.rendered} />
+                </article>
+            </section>
+		</main>
+		<Footer />
+	</body>
+</html>
