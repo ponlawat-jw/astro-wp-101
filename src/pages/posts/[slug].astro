@@ -6,26 +6,19 @@ import base64 from 'base-64';
 
 const { slug } = Astro.params;
 
-const username = 'fetcher';
-const password = 'Aa111111!';
-const newHeaders = new Headers({
-    "Content-Type": "text/html; charset=utf-8",
-});
-newHeaders.append('Authorization', 'Basic ' + base64.encode(username + ':' + password));
+const apiUrlPosts = `${import.meta.env.PUBLIC_APIURL}/posts`;
+const apiUrl = `${apiUrlPosts}?slug=${slug}`;
 
 
 
-let res = await fetch(`https://maag.codesupply.co/lifestyle/wp-json/wp/v2/posts?slug=${slug}`, {
-    method: 'GET',
-    headers: newHeaders,
-});
+let res = await fetch(apiUrl);
 let [post] = await res.json();
 
 
 // The getStaticPaths() is required for static Astro sites.
 // If using SSR, you will not need this function.
 export async function getStaticPaths() {
-  let data = await fetch("https://maag.codesupply.co/lifestyle/wp-json/wp/v2/posts");
+  let data = await fetch(apiUrlPosts);
   let posts = await data.json();
   
   
